@@ -1,0 +1,21 @@
+services:
+  nutrition_ai_db:
+    image: postgres:16
+    container_name: nutrition_ai_db
+    environment:
+      POSTGRES_DB: ${NUTRITION_AI_DB_NAME:-jameofit_nutrition_ai}
+      POSTGRES_USER: ${NUTRITION_AI_DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${NUTRITION_AI_DB_PASSWORD:-12345678}
+    ports:
+      - "${NUTRITION_AI_DB_PORT:-5441}:5432"
+    volumes:
+      - nutrition_ai_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${NUTRITION_AI_DB_USER:-postgres} -d ${NUTRITION_AI_DB_NAME:-jameofit_nutrition_ai}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  nutrition_ai_data:
+    driver: local
