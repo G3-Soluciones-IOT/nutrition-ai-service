@@ -1,4 +1,34 @@
 services:
+  nutrition-ai-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nutrition-ai-service:local
+    container_name: nutrition-ai-service
+    environment:
+      SERVER_PORT: ${SERVER_PORT:-8091}
+      CONFIG_SERVER_URI: ${CONFIG_SERVER_URI:-http://config-service:8888}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:-http://eureka-service:8761/eureka/}
+      EUREKA_INSTANCE_HOSTNAME: nutrition-ai-service
+      NUTRITION_AI_DB_HOST: nutrition_ai_db
+      NUTRITION_AI_DB_PORT: 5432
+      NUTRITION_AI_DB_NAME: ${NUTRITION_AI_DB_NAME:-jameofit_nutrition_ai}
+      NUTRITION_AI_DB_USER: ${NUTRITION_AI_DB_USER:-postgres}
+      NUTRITION_AI_DB_PASSWORD: ${NUTRITION_AI_DB_PASSWORD:-12345678}
+      IAM_JWKS_URI: ${IAM_JWKS_URI:-http://iam-service:8081/api/v1/jwks/.well-known/jwks.json}
+      NUTRITION_AI_INTERNAL_TOKEN: ${NUTRITION_AI_INTERNAL_TOKEN:-internal-service-secret-key}
+      INTERNAL_SERVICE_SECRET: ${INTERNAL_SERVICE_SECRET:-internal-service-secret-key}
+      GCP_PROJECT_ID: ${GCP_PROJECT_ID:-}
+      GCP_LOCATION: ${GCP_LOCATION:-us-central1}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+    ports:
+      - "${SERVER_PORT:-8091}:8091"
+    depends_on:
+      nutrition_ai_db:
+        condition: service_healthy
+    networks:
+      - jameofit_services
+
   nutrition_ai_db:
     image: postgres:16
     container_name: nutrition_ai_db
@@ -15,7 +45,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - jameofit_services
 
 volumes:
   nutrition_ai_data:
     driver: local
+
+networks:
+  jameofit_services:
+    external: true
+    name: config-service_default

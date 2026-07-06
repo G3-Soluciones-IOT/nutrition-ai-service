@@ -41,15 +41,25 @@ public class GeminiProactiveTipService implements ProactiveTipGenerationService 
 
                 Genera UN SOLO mensaje proactivo para mostrar en la pantalla Home.
 
+                Tarea:
+                - Analiza el progreso del usuario comparando consumo actual vs metas.
+                - Identifica el principal desbalance nutricional del dia.
+                - Da una recomendacion practica, especifica y accionable.
+                - Prioriza comida real, porciones simples y habitos sostenibles.
+                - Si faltan proteinas, sugiere una opcion practica compatible con su dieta.
+                - Si faltan carbohidratos, sugiere una fuente adecuada segun el momento del dia.
+                - Si hay exceso calorico, recomienda ajustar la siguiente comida sin castigar ni restringir agresivamente.
+                - Si el agua esta baja, sugiere una estrategia concreta para completarla.
+                - Si no hay datos suficientes, pide registrar comida o agua.
+
                 Reglas de respuesta:
                 - Tono cercano, motivador y breve.
                 - Maximo 2 frases.
-                - No digas que eres nutricionista.
+                - No afirmes ser nutricionista.
                 - No des diagnosticos medicos.
                 - No indiques tratamientos.
-                - No recomiendes alimentos que contradigan alergias o restricciones.
+                - No recomiendes alimentos incompatibles con alergias, restricciones o dieta.
                 - Usa unicamente los datos proporcionados.
-                - Si no hay suficientes datos, invita al usuario a registrar su comida o agua.
                 - Al mediodia enfocate en avance parcial; por la noche enfocate en cierre del dia.
 
                 Datos del usuario:
