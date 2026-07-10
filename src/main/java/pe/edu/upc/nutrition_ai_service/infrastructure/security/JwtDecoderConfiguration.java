@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.jwt.JwtValidators;
@@ -48,15 +49,36 @@ public class JwtDecoderConfiguration {
             @Qualifier("legacyJwtDecoder") JwtDecoder legacyJwtDecoder,
             @Value("${legacy.jwt.enabled:true}") boolean legacyJwtEnabled) {
         return token -> {
+            RuntimeException legacyFailure = null;
+            if (legacyJwtEnabled) {
+                try {
+                    return legacyJwtDecoder.decode(token);
+                } catch (RuntimeException exception) {
+                    legacyFailure = exception;
+                }
+            }
+
             try {
                 return auth0JwtDecoder.decode(token);
-            } catch (JwtException exception) {
-                if (legacyJwtEnabled) {
-                    return legacyJwtDecoder.decode(token);
-                }
-                throw exception;
+            } catch (RuntimeException auth0Failure) {
+                throw jwtFailure(legacyFailure, auth0Failure);
             }
         };
+    }
+
+    private static JwtException jwtFailure(RuntimeException legacyFailure, RuntimeException auth0Failure) {
+        if (legacyFailure instanceof JwtException jwtException) {
+            return jwtException;
+        }
+        if (auth0Failure instanceof JwtException jwtException) {
+            return jwtException;
+        }
+        var failure = new BadJwtException("Failed to decode JWT with IAM JWKS and Auth0");
+        if (legacyFailure != null) {
+            failure.addSuppressed(legacyFailure);
+        }
+        failure.addSuppressed(auth0Failure);
+        return failure;
     }
 
     private static String jwkSetUriFromIssuer(String issuerUri) {
