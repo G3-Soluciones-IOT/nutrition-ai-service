@@ -66,7 +66,7 @@ public class ResourceServerConfig {
         if (!(authentication instanceof JwtAuthenticationToken jwtAuthentication)) {
             return false;
         }
-        var issuer = jwtAuthentication.getToken().getIssuer();
-        return issuer != null && legacyJwtIssuer.equals(issuer.toString());
+        var issuer = jwtAuthentication.getToken().getClaimAsString("iss");
+        return legacyJwtIssuer.equals(issuer);
     }
 }
