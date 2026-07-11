@@ -1,0 +1,7 @@
+* text=auto
+
+.gitattributes text eol=lf
+.github/workflows/*.yml text eol=lf
+
+mvnw text eol=lf
+.mvn/wrapper/maven-wrapper.properties text eol=lf

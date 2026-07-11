@@ -7,6 +7,6 @@ import pe.edu.upc.nutrition_ai_service.application.internal.outboundservices.acl
 
 @FeignClient(name = "profiles-service", path = "/api/v1/user-profiles")
 public interface ProfilesClient {
-    @GetMapping("/user/{userId}")
+    @GetMapping("/by-user/{userId}")
     UserProfileResource getUserProfileByUserId(@PathVariable Long userId);
 }
